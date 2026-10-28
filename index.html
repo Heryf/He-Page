@@ -1,0 +1,348 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="次元基地">
+    <!-- 网站图标 -->
+    <link rel="icon" href="photos/orange.png">
+    <!-- 网站标题 -->
+    <title>次元基地 · 二次元导航</title>
+    <!-- 引用外部CSS文件（?v= 用于更新后强制刷新缓存） -->
+    <link href="assets/m.css?v=20261028b" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="assets/style.css?v=20261028b">
+    <style>
+        /* ===== 卡片 / 弹窗 / 通知样式 ===== */
+        .item {
+            transition: transform .3s ease-in-out, opacity .3s ease-in-out
+        }
+        .item:hover {
+            opacity: .95
+        }
+
+        /* 图片预览模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(4, 8, 16, .72);
+            backdrop-filter: blur(6px)
+        }
+        .modal-content {
+            margin: 5% auto;
+            padding: 14px;
+            border: 1px solid rgba(94, 231, 255, .45);
+            width: 80%;
+            max-width: 700px;
+            border-radius: 14px;
+            background: #0e1424;
+            box-shadow: 0 18px 44px rgba(0, 0, 0, .7), 0 0 26px rgba(94, 231, 255, .18)
+        }
+        .modal-content img {
+            border-radius: 10px
+        }
+        .close {
+            color: #7f93bb;
+            float: right;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 1
+        }
+        .close:hover, .close:focus {
+            color: #5ee7ff;
+            text-decoration: none;
+            cursor: pointer
+        }
+
+        /* 进站通知弹窗 */
+        .web_notice {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(4, 8, 16, .6);
+            backdrop-filter: blur(5px);
+            z-index: 99999
+        }
+        .web_notice_content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 550px;
+            background: linear-gradient(160deg, #141c30, #0b1120);
+            transform: translate(-50%, -50%);
+            border-radius: 18px;
+            padding: 44px 40px;
+            border: 1px solid rgba(94, 231, 255, .3);
+            box-shadow: 0 18px 44px rgba(0, 0, 0, .7), 0 0 30px rgba(94, 231, 255, .15);
+            text-align: center
+        }
+        .web_notice_content::before {
+            content: "✦ ◈ ✦";
+            display: block;
+            color: #5ee7ff;
+            font-size: 20px;
+            letter-spacing: 10px;
+            margin-bottom: 10px;
+            animation: twinkle 1.6s ease-in-out infinite
+        }
+        .web_notice h3 {
+            font-weight: 800;
+            text-align: center;
+            font-size: 26px;
+            color: #eaf4ff;
+            letter-spacing: 5px;
+            text-shadow: 0 0 14px rgba(94, 231, 255, .5)
+        }
+        .web_notice p {
+            font-size: 16px;
+            margin-top: 20px;
+            line-height: 30px;
+            color: #8b9cc4
+        }
+        .web_notice a {
+            display: block;
+            background: linear-gradient(135deg, #5ee7ff, #7c6cff);
+            color: #061019;
+            text-align: center;
+            font-weight: 700;
+            font-size: 19px;
+            line-height: 56px;
+            margin: 38px auto 0;
+            border-radius: 10px;
+            width: 100%;
+            box-shadow: 0 8px 22px rgba(94, 231, 255, .35);
+            transition: transform .25s ease, box-shadow .25s ease
+        }
+        .web_notice a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(124, 108, 255, .5);
+            color: #061019
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: .5 }
+            50% { opacity: 1 }
+        }
+        @media (max-width:600px) {
+            .web_notice_content { width: 90%; padding: 30px 20px }
+            .web_notice h3 { font-size: 21px; letter-spacing: 3px }
+            .web_notice a { font-size: 16px; line-height: 50px }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景漂浮装饰（✦ ◈ △） -->
+    <div class="float-deco" aria-hidden="true">
+        <span class="deco d1">✦</span>
+        <span class="deco d2">◈</span>
+        <span class="deco d3">△</span>
+        <span class="deco d4">✧</span>
+        <span class="deco d5">◇</span>
+        <span class="deco d6">⬢</span>
+    </div>
+
+    <div id="app">
+        <div class="header">
+            <div class="banner">
+                <!-- 网站Logo（把下面的 qq 号换成你自己的即可更换头像） -->
+                <div class="logo">
+                    <img src="https://api.suyanw.cn/api/qq.php/?qq=836721503" alt="">
+                </div>
+            </div>
+            <!-- 作者名称 -->
+            <div class="author-name">◈ 次元基地 ◈</div>
+            <!-- 描述 -->
+            <p class="desc">欢迎来到我的次元基地，一起探索二次元的宇宙 ✦</p>
+        </div>
+        <!-- 主要内容 -->
+        <div class="body">
+            <!-- 导航标签列表 -->
+            <div class="tab-list">
+                <div class="tab-item zy active" data-target="a1">
+                    <span class="text">次元导航</span>
+                </div>
+                <div class="tab-item lx" data-target="a2">
+                    <span class="text">联系我</span>
+                </div>
+                <div class="tab-item dh" data-target="a3">
+                    <span class="text">小站动态</span>
+                </div>
+            </div>
+            <!-- 应用列表1 -->
+            <div class="app-list a1 is-active">
+                <a href="https://blog.qqdsw8.cn/" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/yx.png" alt="">
+                        </div>
+                        <p class="app-name">游戏合集</p>
+                    </div>
+                </a>
+                <a href="https://blog.qqdsw8.cn/" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/gj.png" alt="">
+                        </div>
+                        <p class="app-name">软件工具教程</p>
+                    </div>
+                </a>
+                <a href="https://blog.qqdsw8.cn/" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/flyy.png" alt="">
+                        </div>
+                        <p class="app-name">游戏修改器</p>
+                    </div>
+                </a>
+                <a href="https://www.gov.vn" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/ipa.png" alt="">
+                        </div>
+                        <p class="app-name">IPA软件/视距</p>
+                    </div>
+                </a>
+                <a href="https://blog.qqdsw8.cn/" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/adobe.png" alt="">
+                        </div>
+                        <p class="app-name">Adobe全家桶</p>
+                    </div>
+                </a>
+                <a href="https://blog.qqdsw8.cn/" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/ym.png" alt="">
+                        </div>
+                        <p class="app-name">网站源码搭建</p>
+                     </div>
+                </a>
+                <a href="https://blog.qqdsw8.cn/" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/tv.png" alt="">
+                        </div>
+                        <p class="app-name">影视剧</p>
+                        </div>
+                </a>
+                <a href="https://blog.qqdsw8.cn/" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/bz.png" alt="">
+                        </div>
+                        <p class="app-name">壁纸图片</p>
+                        </div>
+                </a>
+
+            </div>
+            <!-- 应用列表2 -->
+            <div class="app-list a2">
+                <a href="javascript:void(0);" class="item" style="opacity: 1;" onclick="showModal('photos/vx.jpg')">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/微信.png" alt="">
+                        </div>
+                        <p class="app-name">我的微信</p>
+                    </div>
+                </a>
+                <a href="javascript:void(0);" class="item" style="opacity: 1;" onclick="showModal('photos/QQ.jpg')">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="photos/QQ图标.png" alt="">
+                        </div>
+                        <p class="app-name">我的QQ</p>
+                    </div>
+                </a>
+
+            </div>
+            <!-- 应用列表3 -->
+            <div class="app-list a3">
+                <a href="https://blog.qqdsw8.cn/" class="item" target="_blank" style="opacity: 1;">
+                    <div class="content-wrap">
+                        <div class="img-wrap">
+                            <img src="https://img.imdodo.com/dodo/96d003baecb91bf72243ec7dfec9aa56.png" alt="">
+                        </div>
+                        <p class="app-name">主页</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- 网站弹窗通知 -->
+    <div class="web_notice">
+        <div class="web_notice_content">
+            <h3>欢迎来到次元基地</h3>
+            <p>这里是我的二次元导航站<br>收藏不迷路，随时回来逛逛 ✦</p>
+            <a href="javascript:void(0);" onclick="document.querySelector('.web_notice').remove()">知道啦</a>
+        </div>
+    </div>
+    <!-- 模态框 -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="二维码" style="width:100%" onerror="this.style.display='none';document.getElementById('modalTip').style.display='block'">
+            <p id="modalTip" class="modal-tip">还没有上传二维码<br>请把 photos 目录下的图片换成你自己的二维码</p>
+        </div>
+    </div>
+    <!-- 站点配置（以后只改 config.js 这一个文件） -->
+    <script src="config.js"></script>
+    <script>
+        (function () {
+            var tabs = document.querySelectorAll('.tab-item');
+            var lists = document.querySelectorAll('.app-list');
+
+            // 切换标签内容
+            function activate(key) {
+                for (var i = 0; i < lists.length; i++) {
+                    lists[i].classList.toggle('is-active', lists[i].classList.contains(key));
+                }
+                for (var j = 0; j < tabs.length; j++) {
+                    tabs[j].classList.toggle('active', tabs[j].getAttribute('data-target') === key);
+                }
+            }
+
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].addEventListener('click', function () {
+                    activate(this.getAttribute('data-target'));
+                });
+            }
+
+            // 图片预览模态框
+            window.showModal = function (imageSrc) {
+                var tip = document.getElementById('modalTip');
+                var img = document.getElementById('modalImage');
+                tip.style.display = 'none';
+                img.style.display = 'block';
+                img.src = imageSrc;
+                document.getElementById('myModal').style.display = 'block';
+            };
+
+            function closeModal() {
+                document.getElementById('myModal').style.display = 'none';
+            }
+
+            document.querySelector('.modal .close').addEventListener('click', closeModal);
+            document.getElementById('myModal').addEventListener('click', function (e) {
+                if (e.target === this) closeModal();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' || e.keyCode === 27) closeModal();
+            });
+        })();
+    </script>
+    <div id="xf-MusicPlayer" data-cdnName="https://player.xfyun.club/js"  data-themeColor="xf-dark" data-songList="12785396384"data-fadeOutAutoplay></div>
+<script src="https://player.xfyun.club/js/xf-MusicPlayer/js/xf-MusicPlayer.min.js"></script>
+<script src="https://api.suyanw.cn/api/mouse/yinghua.js"></script>
+</body>
+</html>
