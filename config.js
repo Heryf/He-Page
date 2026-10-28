@@ -5,9 +5,12 @@
 var SITE_CONFIG = {
 
     /* ---------- 基本信息 ---------- */
-    title: '次元基地 · 二次元导航',            // 浏览器标签页标题
-    homeTitle: '◈ 次元基地 ◈',                // 头像下方的站点名
-    desc: '欢迎来到我的次元基地，一起探索二次元的宇宙 ✦',   // 一句话简介
+    title: '小宝基地 · 小宝の导航',            // 浏览器标签页标题
+    homeTitle: '◈ 小宝基地 ◈',                // 头像下方的站点名
+    desc: '✦ 欢迎回来，旅人 ✦',   // 一句话简介（接口请求失败时的兜底文字）
+    // 一言接口：填接口地址后，简介每次打开都会从接口随机取一句 ACG 台词；
+    // 不想要随机句就把下面这行改成空字符串 ''
+    descApi: 'https://acg.suyanw.cn/api/yiyan.php',
 
     /* ---------- 图片 ---------- */
     // 头像：填 QQ 号会自动取 QQ 头像；也可以直接填图片路径，如 'photos/avatar.jpg'
@@ -17,7 +20,7 @@ var SITE_CONFIG = {
 
     /* ---------- 三个标签的名字 ---------- */
     tabs: {
-        a1: '次元导航',
+        a1: '小宝导航',
         a2: '联系我',
         a3: '小站动态'
     },
@@ -25,8 +28,8 @@ var SITE_CONFIG = {
     /* ---------- 进站弹窗 ---------- */
     notice: {
         enabled: true,                         // false 则不弹窗
-        title: '欢迎来到次元基地',
-        text: '这里是我的二次元导航站<br>收藏不迷路，随时回来逛逛 ✦',
+        title: '欢迎来到小宝基地',
+        text: '这里是我的小宝发布站点<br>收藏不迷路，随时回来逛逛 ✦',
         button: '知道啦'
     },
 
@@ -37,14 +40,14 @@ var SITE_CONFIG = {
     lists: {
         // 第一个标签：次元导航
         a1: [
-            { name: '游戏合集',     icon: 'photos/yx.png',    url: 'https://blog.qqdsw8.cn/' },
-            { name: '软件工具教程', icon: 'photos/gj.png',    url: 'https://blog.qqdsw8.cn/' },
-            { name: '游戏修改器',   icon: 'photos/flyy.png',  url: 'https://blog.qqdsw8.cn/' },
+            { name: '软件下载-小宝导航',     icon: 'photos/xz.png',    url: 'https://szzbbs.cc.cd/' },
+            { name: '软件工具教程', icon: 'photos/gj.png',    url: 'https://' },
+            /*{ name: '游戏修改器',   icon: 'photos/flyy.png',  url: 'https://' },#
             { name: 'IPA软件/视距', icon: 'photos/ipa.png',   url: 'https://www.gov.vn' },
-            { name: 'Adobe全家桶',  icon: 'photos/adobe.png', url: 'https://blog.qqdsw8.cn/' },
-            { name: '网站源码搭建', icon: 'photos/ym.png',    url: 'https://blog.qqdsw8.cn/' },
-            { name: '影视剧',       icon: 'photos/tv.png',    url: 'https://blog.qqdsw8.cn/' },
-            { name: '壁纸图片',     icon: 'photos/bz.png',    url: 'https://blog.qqdsw8.cn/' }
+            { name: 'Adobe全家桶',  icon: 'photos/adobe.png', url: 'https://' },
+            { name: '网站源码搭建', icon: 'photos/ym.png',    url: 'https://' },
+            { name: '影视剧',       icon: 'photos/tv.png',    url: 'https://' },
+            { name: '壁纸图片',     icon: 'photos/bz.png',    url: 'https://' }*/
         ],
         // 第二个标签：联系我
         a2: [
@@ -53,7 +56,7 @@ var SITE_CONFIG = {
         ],
         // 第三个标签：小站动态
         a3: [
-            { name: '主页', icon: 'https://img.imdodo.com/dodo/96d003baecb91bf72243ec7dfec9aa56.png', url: 'https://blog.qqdsw8.cn/' }
+            { name: '主页(备用)', icon: 'photos/orange.png', url: 'https://' }
         ]
     }
 };
@@ -77,6 +80,20 @@ var SITE_CONFIG = {
     // 站点名 / 简介
     setText('.author-name', cfg.homeTitle);
     setText('.desc', cfg.desc);
+
+    // 简介接一言 API：成功则覆盖上面的兜底文字，失败不影响页面
+    if (cfg.descApi) {
+        fetch(cfg.descApi, { cache: 'no-store' })
+            .then(function (res) { return res.text(); })
+            .then(function (text) {
+                text = (text || '').trim();
+                if (text) {
+                    var el = document.querySelector('.desc');
+                    if (el) el.textContent = '✦ ' + text + ' ✦';
+                }
+            })
+            .catch(function () { /* 接口挂了就用 cfg.desc */ });
+    }
 
     // Banner 图（通过 CSS 变量替换，不破坏原有布局）
     if (cfg.banner) {
