@@ -486,12 +486,22 @@ body {
 	.tab-item:before {
 		display: none
 	}
+	/* 手机端容器窄，contain 会把竖图压成细长条，改用 cover 铺满 */
+	.banner {
+		height: 210px;
+		margin-bottom: 58px
+	}
+	.banner::after {
+		background:
+			linear-gradient(to right, transparent, rgba(94, 231, 255, .9), transparent) 50% 1px / calc(100% - 28px) 2px no-repeat,
+			var(--banner-img) 50% 35% / cover no-repeat
+	}
 }
 
 /* ---------- 小屏手机 ---------- */
 @media (max-width: 360px) {
 	.banner {
-		height: 160px;
+		height: 180px;
 		margin-bottom: 56px
 	}
 	.author-name {
