@@ -3,6 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 兼容老浏览器（Win7 IE）：禁止缓存 HTML，保证更新后能加载到新版本 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -12,8 +16,8 @@
     <!-- 网站标题 -->
     <title>次元基地 · 二次元导航</title>
     <!-- 引用外部CSS文件（?v= 用于更新后强制刷新缓存） -->
-    <link href="assets/m.css?v=20261028c" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="assets/style.css?v=20261028c">
+    <link href="assets/m.css?v=20261101a" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="assets/style.css?v=20261101a">
     <style>
         /* ===== 卡片 / 弹窗 / 通知样式 ===== */
         .item {
@@ -284,7 +288,7 @@
         <div class="web_notice_content">
             <h3>欢迎来到次元基地</h3>
             <p>这里是我的二次元导航站<br>收藏不迷路，随时回来逛逛 ✦</p>
-            <a href="javascript:void(0);" onclick="document.querySelector('.web_notice').remove()">知道啦</a>
+            <a href="javascript:void(0);" onclick="var n=this.parentNode.parentNode;n.style.display='none';n.style.visibility='hidden';">知道啦</a>
         </div>
     </div>
     <!-- 模态框 -->
@@ -296,19 +300,23 @@
         </div>
     </div>
     <!-- 站点配置（以后只改 config.js 这一个文件） -->
-    <script src="config.js"></script>
+    <script src="config.js?v=20261101a"></script>
     <script>
         (function () {
             var tabs = document.querySelectorAll('.tab-item');
             var lists = document.querySelectorAll('.app-list');
 
-            // 切换标签内容
+            // 切换标签内容（用 add/remove，兼容老 IE 不支持 classList.toggle 第二参数）
             function activate(key) {
                 for (var i = 0; i < lists.length; i++) {
-                    lists[i].classList.toggle('is-active', lists[i].classList.contains(key));
+                    var isMatch = (' ' + lists[i].className + ' ').indexOf(' ' + key + ' ') > -1;
+                    if (isMatch) lists[i].classList.add('is-active');
+                    else lists[i].classList.remove('is-active');
                 }
                 for (var j = 0; j < tabs.length; j++) {
-                    tabs[j].classList.toggle('active', tabs[j].getAttribute('data-target') === key);
+                    var on = tabs[j].getAttribute('data-target') === key;
+                    if (on) tabs[j].classList.add('active');
+                    else tabs[j].classList.remove('active');
                 }
             }
 
@@ -343,6 +351,6 @@
     </script>
     <div id="xf-MusicPlayer" data-cdnName="https://player.xfyun.club/js" data-themeColor="xf-dark" data-songList="12785396384"></div>
 <script src="https://player.xfyun.club/js/xf-MusicPlayer/js/xf-MusicPlayer.min.js"></script>
-<script src="assets/yinghua.js"></script>
+<script src="assets/yinghua.js?v=20261101a"></script>
 </body>
 </html>

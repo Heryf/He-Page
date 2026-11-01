@@ -544,3 +544,34 @@ body {
 	}
 }
 
+/* ============================================================
+ * Win7 IE 降级（IE 不支持 CSS 变量 / grid 布局 / flex gap）
+ * 只在这些浏览器上生效，新浏览器不受影响
+ * ============================================================ */
+html.ie-legacy .tab-list {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-pack: center;
+	justify-content: center
+}
+
+html.ie-legacy .tab-item {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-pack: center;
+	justify-content: center;
+	-ms-flex-align: center;
+	align-items: center;
+	margin: 0 4px;
+	text-align: center
+}
+
+/* IE 无 grid，隐藏左侧小图标，保证文字居中 */
+html.ie-legacy .tab-item:before {
+	display: none
+}
+
+html.ie-legacy .tab-item .text {
+	margin: 0
+}
+

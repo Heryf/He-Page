@@ -29,7 +29,7 @@ var SITE_CONFIG = {
     notice: {
         enabled: true,                         // false 则不弹窗
         title: '欢迎来到小宝基地',
-        text: '这里是我的小宝发布站点<br>收藏不迷路，随时回来逛逛 ✦',
+        text: '这里是我的小宝发布站点<br>Ctrl+D 收藏不迷路，随时回来逛逛 ✦',
         button: '知道啦'
     },
 
@@ -68,6 +68,25 @@ var SITE_CONFIG = {
     var cfg = window.SITE_CONFIG;
     if (!cfg) return;
 
+    // 老浏览器（Win7 IE）兼容标记，样式里用 html.ie-legacy 做降级
+    var isIE = /MSIE|Trident/.test(navigator.userAgent);
+    if (isIE) document.documentElement.className += ' ie-legacy';
+
+    // IE 不支持 Element.closest，这里做最小补丁
+    if (!Element.prototype.closest) {
+        Element.prototype.closest = function (selector) {
+            var el = this;
+            while (el && el.nodeType === 1) {
+                if (el.matches || el.msMatchesSelector || el.webkitMatchesSelector) {
+                    var match = el.matches || el.msMatchesSelector || el.webkitMatchesSelector;
+                    if (match.call(el, selector)) return el;
+                }
+                el = el.parentNode;
+            }
+            return null;
+        };
+    }
+
     function setText(selector, value) {
         if (!value) return;
         var el = document.querySelector(selector);
@@ -82,22 +101,39 @@ var SITE_CONFIG = {
     setText('.desc', cfg.desc);
 
     // 简介接一言 API：成功则覆盖上面的兜底文字，失败不影响页面
+    // 用 XMLHttpRequest 而不是 fetch —— Win7 的 IE 不支持 fetch，会直接报错中断整个脚本
     if (cfg.descApi) {
-        fetch(cfg.descApi, { cache: 'no-store' })
-            .then(function (res) { return res.text(); })
-            .then(function (text) {
-                text = (text || '').trim();
-                if (text) {
-                    var el = document.querySelector('.desc');
-                    if (el) el.textContent = '✦ ' + text + ' ✦';
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', cfg.descApi, true);
+            xhr.timeout = 6000;
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState !== 4) return;
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var text = (xhr.responseText || '').replace(/^\s+|\s+$/g, '');
+                    if (text) {
+                        var el = document.querySelector('.desc');
+                        if (el) el.textContent = '✦ ' + text + ' ✦';
+                    }
                 }
-            })
-            .catch(function () { /* 接口挂了就用 cfg.desc */ });
+            };
+            xhr.send();
+        } catch (e) { /* 接口异常时保持 cfg.desc 兜底文字 */ }
     }
 
-    // Banner 图（通过 CSS 变量替换，不破坏原有布局）
+    // Banner 图（现代浏览器走 CSS 变量；IE 不支持 CSS 变量，额外直接给元素设背景图）
     if (cfg.banner) {
-        document.documentElement.style.setProperty('--banner-img', 'url("' + cfg.banner + '")');
+        try {
+            document.documentElement.style.setProperty('--banner-img', 'url("' + cfg.banner + '")');
+        } catch (e) { /* IE 忽略 CSS 变量 */ }
+
+        var bannerEl = document.querySelector('.banner');
+        if (bannerEl) {
+            bannerEl.style.backgroundImage = 'url("' + cfg.banner + '")';
+            bannerEl.style.backgroundSize = 'cover';
+            bannerEl.style.backgroundPosition = '50% 50%';
+            bannerEl.style.backgroundRepeat = 'no-repeat';
+        }
     }
 
     // 头像
@@ -117,7 +153,8 @@ var SITE_CONFIG = {
     if (notice) {
         var noticeBox = document.querySelector('.web_notice');
         if (notice.enabled === false) {
-            if (noticeBox) noticeBox.remove();
+            // IE 不支持 .remove()，用 removeChild
+            if (noticeBox && noticeBox.parentNode) noticeBox.parentNode.removeChild(noticeBox);
         } else if (noticeBox) {
             setText('.web_notice h3', notice.title);
             var p = noticeBox.querySelector('p');
