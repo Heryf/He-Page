@@ -12,6 +12,10 @@ var SITE_CONFIG = {
     // 不想要随机句就把下面这行改成空字符串 ''
     descApi: 'https://acg.suyanw.cn/api/yiyan.php',
 
+    /* ---------- 页脚（版权信息） ---------- */
+    author: '小宝',                // 作者署名，显示为 "by 小宝"
+    copyright: '© 2026 小宝基地',  // 版权文字，可自行修改年份和名称
+
     /* ---------- 图片 ---------- */
     // 头像：填 QQ 号会自动取 QQ 头像；也可以直接填图片路径，如 'photos/avatar.jpg'
     avatar: 'https://api.suyanw.cn/api/qq.php/?qq=1401953811',
@@ -157,6 +161,10 @@ var SITE_CONFIG = {
     // 站点名 / 简介
     setTextOf('.author-name', cfg.homeTitle);
     setTextOf('.desc', cfg.desc);
+
+    // 页脚版权
+    setTextOf('#footerAuthor', cfg.author ? 'by ' + cfg.author : '');
+    setTextOf('#footerCopy', cfg.copyright || '');
 
     // 简介接一言 API：成功则覆盖上面的兜底文字，失败不影响页面
     // 用 XMLHttpRequest 而不是 fetch —— Win7 的 IE 不支持 fetch，会直接报错中断整个脚本

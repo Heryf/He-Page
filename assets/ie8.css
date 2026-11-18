@@ -176,6 +176,21 @@ body {
 .af-text {
 	color: #9b9787
 }
+
+.site-footer {
+	display: block;
+	text-align: center;
+	color: #8d8979;
+	font-size: 12px;
+	padding: 10px 0 20px
+}
+.sf-line {
+	display: none
+}
+.sf-author {
+	color: #6d6a5d;
+	font-weight: bold
+}
 body:before,
 .banner:after {
 	display: none !important
