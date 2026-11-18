@@ -15,8 +15,12 @@ var SITE_CONFIG = {
     /* ---------- 图片 ---------- */
     // 头像：填 QQ 号会自动取 QQ 头像；也可以直接填图片路径，如 'photos/avatar.jpg'
     avatar: 'https://api.suyanw.cn/api/qq.php/?qq=1401953811',
-    // Banner 横幅图：可换成自己的图片，如 'photos/banner.jpg'
-    banner: 'https://api.suyanw.cn/api/comic3.php',
+    // Banner 显示模式：'photo' = 贴纸相框（普通图/横图都用这个）；'standee' = 透明立绘直接站在纸面上
+    bannerMode: 'photo',
+    // Banner 图：星穹铁道随机图（接口返回 WebP，不支持时自动用下方兜底图）
+    banner: 'https://api.r10086.com/%E6%A8%B1%E9%81%93%E9%9A%8F%E6%9C%BA%E5%9B%BE%E7%89%87api%E6%8E%A5%E5%8F%A3.php?%E5%9B%BE%E7%89%87%E7%B3%BB%E5%88%97=%E6%98%9F%E7%A9%B9%E9%93%81%E9%81%93',
+    // 兜底图：给不支持 WebP 的浏览器用（IE 全系、老 Safari），留空则不做兜底
+    bannerFallback: 'https://api.suyanw.cn/api/comic3.php',
 
     /* ---------- 三个标签的名字 ---------- */
     tabs: {
@@ -68,12 +72,25 @@ var SITE_CONFIG = {
     var cfg = window.SITE_CONFIG;
     if (!cfg) return;
 
-    // 老浏览器（Win7 IE）兼容标记，样式里用 html.ie-legacy 做降级
-    var isIE = /MSIE|Trident/.test(navigator.userAgent);
-    if (isIE) document.documentElement.className += ' ie-legacy';
+    /* ---------- 老浏览器兼容垫片（Win7 + IE8/9/10/11） ---------- */
+    if (!Array.prototype.forEach) {
+        Array.prototype.forEach = function (fn, ctx) {
+            for (var i = 0; i < this.length; i++) fn.call(ctx, this[i], i, this);
+        };
+    }
+    if (!Object.keys) {
+        Object.keys = function (obj) {
+            var arr = [], k;
+            for (k in obj) if (Object.prototype.hasOwnProperty.call(obj, k)) arr.push(k);
+            return arr;
+        };
+    }
+    if (!String.prototype.trim) {
+        String.prototype.trim = function () { return this.replace(/^\s+|\s+$/g, ''); };
+    }
 
-    // IE 不支持 Element.closest，这里做最小补丁
-    if (!Element.prototype.closest) {
+    // IE 不支持 Element.closest，这里做最小补丁（IE8 没有 Element 构造器，需先判断）
+    if (window.Element && Element.prototype && !Element.prototype.closest) {
         Element.prototype.closest = function (selector) {
             var el = this;
             while (el && el.nodeType === 1) {
@@ -87,18 +104,59 @@ var SITE_CONFIG = {
         };
     }
 
-    function setText(selector, value) {
-        if (!value) return;
-        var el = document.querySelector(selector);
-        if (el) el.textContent = value;
+    // 老浏览器（Win7 IE）兼容标记，样式里用 html.ie-legacy 做降级
+    var ua = navigator.userAgent;
+    var isIE = /MSIE|Trident/.test(ua);
+    if (isIE) document.documentElement.className += ' ie-legacy';
+
+    /* ---------- 通用小工具 ---------- */
+    // 事件绑定：IE8 只有 attachEvent
+    function on(el, type, fn) {
+        if (!el) return;
+        if (el.addEventListener) el.addEventListener(type, fn, false);
+        else if (el.attachEvent) el.attachEvent('on' + type, fn);
     }
+
+    // 文本写入：IE8 没有 textContent
+    function setText(node, text) {
+        if (!node) return;
+        if ('textContent' in node) node.textContent = text;
+        else node.innerText = text;
+    }
+
+    function setTextOf(selector, value) {
+        if (!value) return;
+        setText(document.querySelector(selector), value);
+    }
+
+    // 类名操作：不依赖 classList（IE9 及以下都没有）
+    function addClass(el, cls) {
+        if (!el) return;
+        if ((' ' + el.className + ' ').indexOf(' ' + cls + ' ') < 0) {
+            el.className = el.className ? el.className + ' ' + cls : cls;
+        }
+    }
+    function removeClass(el, cls) {
+        if (!el) return;
+        el.className = (' ' + el.className + ' ').replace(' ' + cls + ' ', ' ').replace(/^\s+|\s+$/g, '');
+    }
+    function hasClass(el, cls) {
+        return !!el && (' ' + el.className + ' ').indexOf(' ' + cls + ' ') > -1;
+    }
+    window.__siteAddClass = addClass;
+    window.__siteRemoveClass = removeClass;
+    window.__siteHasClass = hasClass;
+    window.__siteOn = on;
+
+    var supportsSVG = !!(document.createElementNS &&
+        document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGRect);
 
     // 浏览器标题
     if (cfg.title) document.title = cfg.title;
 
     // 站点名 / 简介
-    setText('.author-name', cfg.homeTitle);
-    setText('.desc', cfg.desc);
+    setTextOf('.author-name', cfg.homeTitle);
+    setTextOf('.desc', cfg.desc);
 
     // 简介接一言 API：成功则覆盖上面的兜底文字，失败不影响页面
     // 用 XMLHttpRequest 而不是 fetch —— Win7 的 IE 不支持 fetch，会直接报错中断整个脚本
@@ -106,14 +164,13 @@ var SITE_CONFIG = {
         try {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', cfg.descApi, true);
-            xhr.timeout = 6000;
+            try { xhr.timeout = 6000; } catch (e0) { /* IE9 以下不支持 timeout */ }
             xhr.onreadystatechange = function () {
                 if (xhr.readyState !== 4) return;
                 if (xhr.status >= 200 && xhr.status < 300) {
                     var text = (xhr.responseText || '').replace(/^\s+|\s+$/g, '');
                     if (text) {
-                        var el = document.querySelector('.desc');
-                        if (el) el.textContent = '✦ ' + text + ' ✦';
+                        setTextOf('.desc', '✦ ' + text + ' ✦');
                     }
                 }
             };
@@ -121,19 +178,33 @@ var SITE_CONFIG = {
         } catch (e) { /* 接口异常时保持 cfg.desc 兜底文字 */ }
     }
 
-    // Banner 图（现代浏览器走 CSS 变量；IE 不支持 CSS 变量，额外直接给元素设背景图）
-    if (cfg.banner) {
-        try {
-            document.documentElement.style.setProperty('--banner-img', 'url("' + cfg.banner + '")');
-        } catch (e) { /* IE 忽略 CSS 变量 */ }
+    // Banner 图：写进贴纸相框里的 <img>
+    // 若浏览器不支持 WebP（IE 全系），自动改用 bannerFallback，避免相框空白
+    var canWebp = false;
+    try {
+        var probe = document.createElement('canvas');
+        canWebp = !!(probe.toDataURL && probe.toDataURL('image/webp').indexOf('image/webp') > -1);
+    } catch (e) { canWebp = false; }
 
-        var bannerEl = document.querySelector('.banner');
-        if (bannerEl) {
-            bannerEl.style.backgroundImage = 'url("' + cfg.banner + '")';
-            bannerEl.style.backgroundSize = 'cover';
-            bannerEl.style.backgroundPosition = '50% 50%';
-            bannerEl.style.backgroundRepeat = 'no-repeat';
-        }
+    // 立绘本身就是 PNG，IE 也能显示，只有相框模式才需要 WebP 回退
+    var bannerSrc = cfg.banner;
+    if (cfg.bannerMode !== 'standee' && cfg.bannerFallback && !canWebp) {
+        bannerSrc = cfg.bannerFallback;
+    }
+
+    var bannerImg = document.getElementById('bannerImg');
+    var bannerBox = document.querySelector('.banner');
+    if (bannerBox && cfg.bannerMode === 'standee') {
+        bannerBox.className += ' is-standee';
+    }
+    if (bannerImg && bannerSrc) {
+        // 加载失败（接口挂掉/超时）时自动换兜底图
+        bannerImg.onerror = function () {
+            if (cfg.bannerFallback && this.src !== cfg.bannerFallback) {
+                this.src = cfg.bannerFallback;
+            }
+        };
+        bannerImg.src = bannerSrc;
     }
 
     // 头像
@@ -144,7 +215,7 @@ var SITE_CONFIG = {
     if (cfg.tabs) {
         Object.keys(cfg.tabs).forEach(function (key) {
             var el = document.querySelector('.tab-item[data-target="' + key + '"] .text');
-            if (el) el.textContent = cfg.tabs[key];
+            setText(el, cfg.tabs[key]);
         });
     }
 
@@ -156,11 +227,11 @@ var SITE_CONFIG = {
             // IE 不支持 .remove()，用 removeChild
             if (noticeBox && noticeBox.parentNode) noticeBox.parentNode.removeChild(noticeBox);
         } else if (noticeBox) {
-            setText('.web_notice h3', notice.title);
+            setTextOf('.web_notice h3', notice.title);
             var p = noticeBox.querySelector('p');
             if (p && notice.text) p.innerHTML = notice.text;
             var btn = noticeBox.querySelector('a');
-            if (btn && notice.button) btn.textContent = notice.button;
+            setText(btn, notice.button);
         }
     }
 
@@ -197,7 +268,7 @@ var SITE_CONFIG = {
 
                 var name = document.createElement('p');
                 name.className = 'app-name';
-                name.textContent = item.name || '';
+                setText(name, item.name || '');
 
                 wrap.appendChild(imgWrap);
                 wrap.appendChild(name);
@@ -207,11 +278,29 @@ var SITE_CONFIG = {
         });
     }
 
-    // 点击二维码卡片时打开预览
-    document.addEventListener('click', function (e) {
-        var target = e.target.closest ? e.target.closest('[data-modal]') : null;
+    // 点击二维码卡片时打开预览（鼠标 / 触屏 / IE8 都支持）
+    function closestAttr(el, attr) {
+        while (el && el.nodeType === 1) {
+            if (el.getAttribute && el.getAttribute(attr)) return el;
+            el = el.parentNode;
+        }
+        return null;
+    }
+
+    var lastTap = 0;
+    function handleCardTap(e) {
+        e = e || window.event;
+        var target = closestAttr(e.target || e.srcElement, 'data-modal');
         if (!target) return;
-        e.preventDefault();
+        if (e.preventDefault) e.preventDefault(); else e.returnValue = false;
+
+        var now = new Date().getTime();
+        if (now - lastTap < 400) return;  // 触屏上 touchend 与 click 会重复触发，去重
+        lastTap = now;
+
         if (window.showModal) window.showModal(target.getAttribute('data-modal'));
-    });
+    }
+
+    on(document, 'click', handleCardTap);
+    on(document, 'touchend', handleCardTap);
 })();

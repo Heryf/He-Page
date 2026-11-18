@@ -3,17 +3,16 @@
 #app {
     max-width: 600px;
     margin: 30px auto;
-	background-color: rgba(14, 20, 36, .88);
+	background-color: #fffdf7;
 	font-size: 16px;
 	font-family: PingFangSC-Regular;
-	color: #cfd9f2;
-	box-shadow: 0 14px 36px 0 rgba(0, 0, 0, 0.6), 0 0 30px rgba(94, 231, 255, 0.1);
-    border-radius: 16px;
-    border: 1px solid rgba(94, 231, 255, 0.18);
+	color: #1c1c18;
+	box-shadow: 8px 8px 0 #1c1c18;
+    border-radius: 20px;
+    border: 2px solid #1c1c18;
     padding:30px;
     position: relative;
     z-index: 1;
-    backdrop-filter: blur(6px);
 }
 
 
@@ -24,6 +23,9 @@
 	        margin: 0 auto;
 	        height:100%;
 	        border-radius: 0px;
+	        border-left: 0;
+	        border-right: 0;
+	        box-shadow: none;
 	         padding:0px;
 	}
    }
@@ -43,17 +45,13 @@ html {
 }
 
 body {
-	background-color: #070b14;
+	background-color: #f1efe6;
 	background-image:
-		radial-gradient(circle at 20% 8%, rgba(94, 231, 255, 0.12), transparent 45%),
-		radial-gradient(circle at 82% 0%, rgba(124, 108, 255, 0.14), transparent 42%),
-		radial-gradient(circle at 50% 105%, rgba(255, 92, 160, 0.08), transparent 45%),
-		linear-gradient(160deg, #070b14 0%, #0e1526 55%, #120f22 100%);
-
-	/* background: url("https://img.imdodo.com/679e0419e68dead05c216615997c4f90.jpg"); */
+		radial-gradient(circle at 12% 6%, rgba(201, 233, 79, .22), transparent 42%),
+		radial-gradient(circle at 88% 4%, rgba(201, 233, 79, .14), transparent 40%),
+		radial-gradient(#ddd9c8 1px, transparent 1px);
+	background-size: auto, auto, 22px 22px;
 	background-attachment: fixed;
-	background-size: cover;
-	background-position: center;
 	margin: 0;
 	min-height: 100vh
 }
@@ -300,8 +298,7 @@ body {
 	font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, "\5FAE\8F6F\96C5\9ED1", Arial, sans-serif;
 	font-size: 12px;
 	line-height: 1.5;
-	color: #515a6e;
-	background-color: #fff;
+	color: #1c1c18;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale
 }

@@ -16,15 +16,16 @@
     <!-- 网站标题 -->
     <title>次元基地 · 二次元导航</title>
     <!-- 引用外部CSS文件（?v= 用于更新后强制刷新缓存） -->
-    <link href="assets/m.css?v=20261101a" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="assets/style.css?v=20261101a">
+    <link href="assets/m.css?v=20261119a" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="assets/style.css?v=20261119b">
+    <!--[if lte IE 9]><link rel="stylesheet" href="assets/ie8.css?v=20261119a"><![endif]-->
     <style>
-        /* ===== 卡片 / 弹窗 / 通知样式 ===== */
+        /* ===== 卡片 / 弹窗 / 通知样式（涂鸦手账风） ===== */
         .item {
             transition: transform .3s ease-in-out, opacity .3s ease-in-out
         }
         .item:hover {
-            opacity: .95
+            opacity: .98
         }
 
         /* 图片预览模态框 */
@@ -38,100 +39,117 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(4, 8, 16, .72);
-            backdrop-filter: blur(6px)
+            background-color: rgba(28, 28, 24, .55)
         }
         .modal-content {
             margin: 5% auto;
             padding: 14px;
-            border: 1px solid rgba(94, 231, 255, .45);
+            border: 2px solid #1c1c18;
             width: 80%;
             max-width: 700px;
-            border-radius: 14px;
-            background: #0e1424;
-            box-shadow: 0 18px 44px rgba(0, 0, 0, .7), 0 0 26px rgba(94, 231, 255, .18)
+            border-radius: 16px;
+            background: #fffdf7;
+            box-shadow: 6px 6px 0 #1c1c18
         }
         .modal-content img {
             border-radius: 10px
         }
         .close {
-            color: #7f93bb;
+            color: #1c1c18;
             float: right;
             font-size: 30px;
             font-weight: bold;
             line-height: 1
         }
         .close:hover, .close:focus {
-            color: #5ee7ff;
+            color: #8fae2b;
             text-decoration: none;
             cursor: pointer
         }
 
-        /* 进站通知弹窗 */
+        /* 进站通知弹窗（table 居中，触屏/IE 点击区域不会偏移） */
         .web_notice {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(4, 8, 16, .6);
-            backdrop-filter: blur(5px);
-            z-index: 99999
+            background: rgba(241, 239, 230, .82);
+            z-index: 99999;
+            display: table;
+            table-layout: fixed;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation
+        }
+        .web_notice_inner {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            padding: 20px
         }
         .web_notice_content {
-            position: fixed;
-            top: 50%;
-            left: 50%;
+            position: relative;
+            display: inline-block;
             width: 550px;
-            background: linear-gradient(160deg, #141c30, #0b1120);
-            transform: translate(-50%, -50%);
+            max-width: 100%;
+            background: #fffdf7;
             border-radius: 18px;
             padding: 44px 40px;
-            border: 1px solid rgba(94, 231, 255, .3);
-            box-shadow: 0 18px 44px rgba(0, 0, 0, .7), 0 0 30px rgba(94, 231, 255, .15);
+            border: 2px solid #1c1c18;
+            box-shadow: 7px 7px 0 #1c1c18;
             text-align: center
         }
         .web_notice_content::before {
             content: "✦ ◈ ✦";
             display: block;
-            color: #5ee7ff;
+            color: #c9e94f;
             font-size: 20px;
             letter-spacing: 10px;
             margin-bottom: 10px;
+            -webkit-text-stroke: 1px #1c1c18;
             animation: twinkle 1.6s ease-in-out infinite
         }
         .web_notice h3 {
             font-weight: 800;
             text-align: center;
             font-size: 26px;
-            color: #eaf4ff;
-            letter-spacing: 5px;
-            text-shadow: 0 0 14px rgba(94, 231, 255, .5)
+            color: #1c1c18;
+            letter-spacing: 5px
         }
         .web_notice p {
             font-size: 16px;
             margin-top: 20px;
             line-height: 30px;
-            color: #8b9cc4
+            color: #6d6a5d
         }
         .web_notice a {
             display: block;
-            background: linear-gradient(135deg, #5ee7ff, #7c6cff);
-            color: #061019;
+            background: #c9e94f;
+            color: #1c1c18;
             text-align: center;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 19px;
-            line-height: 56px;
+            line-height: 54px;
             margin: 38px auto 0;
-            border-radius: 10px;
+            border-radius: 999px;
             width: 100%;
-            box-shadow: 0 8px 22px rgba(94, 231, 255, .35);
-            transition: transform .25s ease, box-shadow .25s ease
+            border: 2px solid #1c1c18;
+            box-shadow: 4px 4px 0 #1c1c18;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            transition: transform .18s ease, box-shadow .18s ease
         }
         .web_notice a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 28px rgba(124, 108, 255, .5);
-            color: #061019
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 #1c1c18;
+            color: #1c1c18
         }
         @keyframes twinkle {
             0%, 100% { opacity: .5 }
@@ -145,19 +163,24 @@
     </style>
 </head>
 <body>
-    <!-- 背景漂浮装饰（✦ ◈ △） -->
-    <div class="float-deco" aria-hidden="true">
-        <span class="deco d1">✦</span>
-        <span class="deco d2">◈</span>
-        <span class="deco d3">△</span>
-        <span class="deco d4">✧</span>
-        <span class="deco d5">◇</span>
-        <span class="deco d6">⬢</span>
-    </div>
+    <!-- 背景涂鸦层由 assets/doodle.js 动态生成（无需手写 HTML） -->
 
     <div id="app">
         <div class="header">
             <div class="banner">
+                <!-- 两侧涂鸦装饰（填补相框左右空白） -->
+                <div class="banner-deco" aria-hidden="true">
+                    <span class="bd bd-star">★</span>
+                    <span class="bd bd-plus">+</span>
+                    <span class="bd bd-ring"></span>
+                    <span class="bd bd-spark">✦</span>
+                    <span class="bd bd-wave">〜</span>
+                    <span class="bd bd-dia">◇</span>
+                </div>
+                <!-- 贴纸相框：随机图按原比例完整显示在相框里，不再有两侧模糊底 -->
+                <div class="banner-photo">
+                    <img id="bannerImg" src="https://api.suyanw.cn/api/comic3.php" alt="">
+                </div>
                 <!-- 网站Logo（把下面的 qq 号换成你自己的即可更换头像） -->
                 <div class="logo">
                     <img src="https://api.suyanw.cn/api/qq.php/?qq=836721503" alt="">
@@ -281,14 +304,23 @@
                     </div>
                 </a>
             </div>
+
+            <!-- 列表底部说明（填补下方空白） -->
+            <div class="app-footer">
+                <span class="af-line"></span>
+                <span class="af-text">✦ 更多链接持续添加中 ✦</span>
+                <span class="af-line"></span>
+            </div>
         </div>
     </div>
-    <!-- 网站弹窗通知 -->
-    <div class="web_notice">
-        <div class="web_notice_content">
-            <h3>欢迎来到次元基地</h3>
-            <p>这里是我的二次元导航站<br>收藏不迷路，随时回来逛逛 ✦</p>
-            <a href="javascript:void(0);" onclick="var n=this.parentNode.parentNode;n.style.display='none';n.style.visibility='hidden';">知道啦</a>
+    <!-- 网站弹窗通知（用 table 居中，避免 transform 在触屏/IE 上导致点击区域偏移） -->
+    <div class="web_notice" id="webNotice">
+        <div class="web_notice_inner">
+            <div class="web_notice_content">
+                <h3>欢迎来到次元基地</h3>
+                <p>这里是我的二次元导航站<br>收藏不迷路，随时回来逛逛 ✦</p>
+                <a id="noticeBtn" href="javascript:void(0);">知道啦</a>
+            </div>
         </div>
     </div>
     <!-- 模态框 -->
@@ -300,28 +332,59 @@
         </div>
     </div>
     <!-- 站点配置（以后只改 config.js 这一个文件） -->
-    <script src="config.js?v=20261101a"></script>
+    <script src="config.js?v=20261119a"></script>
     <script>
         (function () {
+            // ---- 兼容层：IE8 用 attachEvent，以下工具与 config.js 里的保持一致 ----
+            function on(el, type, fn) {
+                if (!el) return;
+                if (window.__siteOn) { window.__siteOn(el, type, fn); return; }
+                if (el.addEventListener) el.addEventListener(type, fn, false);
+                else if (el.attachEvent) el.attachEvent('on' + type, fn);
+            }
+            function addClass(el, cls) {
+                if (!el) return;
+                if (window.__siteAddClass) { window.__siteAddClass(el, cls); return; }
+                if ((' ' + el.className + ' ').indexOf(' ' + cls + ' ') < 0) el.className += ' ' + cls;
+            }
+            function removeClass(el, cls) {
+                if (!el) return;
+                if (window.__siteRemoveClass) { window.__siteRemoveClass(el, cls); return; }
+                el.className = (' ' + el.className + ' ').replace(' ' + cls + ' ', ' ').replace(/^\s+|\s+$/g, '');
+            }
+            // 触屏设备会同时触发 touchend 和 click，用时间戳去重，保证一次点击只执行一次
+            function bindTap(el, fn) {
+                if (!el) return;
+                var last = 0;
+                function handler(e) {
+                    var now = new Date().getTime();
+                    if (now - last < 400) return;
+                    last = now;
+                    fn.call(el, e || window.event);
+                }
+                on(el, 'click', handler);
+                on(el, 'touchend', handler);
+                on(el, 'MSPointerUp', handler);
+            }
+
             var tabs = document.querySelectorAll('.tab-item');
             var lists = document.querySelectorAll('.app-list');
 
-            // 切换标签内容（用 add/remove，兼容老 IE 不支持 classList.toggle 第二参数）
+            // 切换标签内容
             function activate(key) {
                 for (var i = 0; i < lists.length; i++) {
                     var isMatch = (' ' + lists[i].className + ' ').indexOf(' ' + key + ' ') > -1;
-                    if (isMatch) lists[i].classList.add('is-active');
-                    else lists[i].classList.remove('is-active');
+                    if (isMatch) addClass(lists[i], 'is-active');
+                    else removeClass(lists[i], 'is-active');
                 }
                 for (var j = 0; j < tabs.length; j++) {
-                    var on = tabs[j].getAttribute('data-target') === key;
-                    if (on) tabs[j].classList.add('active');
-                    else tabs[j].classList.remove('active');
+                    if (tabs[j].getAttribute('data-target') === key) addClass(tabs[j], 'active');
+                    else removeClass(tabs[j], 'active');
                 }
             }
 
             for (var i = 0; i < tabs.length; i++) {
-                tabs[i].addEventListener('click', function () {
+                bindTap(tabs[i], function () {
                     activate(this.getAttribute('data-target'));
                 });
             }
@@ -339,18 +402,32 @@
             function closeModal() {
                 document.getElementById('myModal').style.display = 'none';
             }
+            window.closeModal = closeModal;
 
-            document.querySelector('.modal .close').addEventListener('click', closeModal);
-            document.getElementById('myModal').addEventListener('click', function (e) {
-                if (e.target === this) closeModal();
+            // 进站通知关闭（鼠标、触屏、触控笔都生效）
+            var notice = document.getElementById('webNotice');
+            function closeNotice() {
+                if (!notice) return;
+                notice.style.display = 'none';
+                notice.style.visibility = 'hidden';
+            }
+            window.closeNotice = closeNotice;
+            bindTap(document.getElementById('noticeBtn'), closeNotice);
+
+            bindTap(document.querySelector('.modal .close'), closeModal);
+            bindTap(document.getElementById('myModal'), function (e) {
+                var t = (e && (e.target || e.srcElement)) || null;
+                if (t === this) closeModal();
             });
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' || e.keyCode === 27) closeModal();
+            on(document, 'keydown', function (e) {
+                e = e || window.event;
+                if (e.keyCode === 27) closeModal();
             });
         })();
     </script>
-    <div id="xf-MusicPlayer" data-cdnName="https://player.xfyun.club/js" data-themeColor="xf-dark" data-songList="12785396384"></div>
+    <div id="xf-MusicPlayer" data-cdnName="https://player.xfyun.club/js" data-themeColor="xf-original" data-songList="12785396384"></div>
 <script src="https://player.xfyun.club/js/xf-MusicPlayer/js/xf-MusicPlayer.min.js"></script>
-<script src="assets/yinghua.js?v=20261101a"></script>
+<script src="assets/doodle.js?v=20261118e"></script>
+<script src="assets/cursor.js?v=20261118e"></script>
 </body>
 </html>

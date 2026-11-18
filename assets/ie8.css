@@ -1,0 +1,247 @@
+/* ============================================================
+ * IE9 及以下降级样式（由 <!--[if lte IE 9]> 条件注释加载）
+ * IE9/IE8 不支持：flex / grid / 动画（IE9 无动画）
+ * IE8 额外不支持：圆角 / 阴影 / rgba / SVG
+ * 这里改用 inline-block + 实色边框，保证能看、能点
+ * ============================================================ */
+
+body {
+	background: #f1efe6 !important;
+	overflow-x: hidden
+}
+
+#app {
+	width: 960px;
+	max-width: none;
+	margin: 20px auto;
+	background: #fffdf7;
+	border: 3px solid #1c1c18;
+	padding: 24px;
+	color: #1c1c18
+}
+
+/* 顶部横幅：纸面底板 + 简单相框（IE8 无圆角阴影） */
+.banner {
+	height: 230px;
+	margin-bottom: 58px;
+	padding: 14px;
+	background: #fdfcf4;
+	border: 2px solid #1c1c18;
+	text-align: center
+}
+.banner:before,
+.banner:after {
+	display: none
+}
+.banner-photo {
+	display: inline-block;
+	height: 200px;
+	padding: 8px;
+	background: #fff;
+	border: 2px solid #1c1c18
+}
+.banner-photo img {
+	height: 200px;
+	width: auto
+}
+.banner-photo:before,
+.banner-photo:after {
+	display: none
+}
+
+.logo {
+	width: 96px;
+	height: 96px;
+	bottom: -48px;
+	margin-left: -48px;
+	background: #fff;
+	border: 3px solid #1c1c18
+}
+.logo img {
+	width: 90px;
+	height: 90px
+}
+
+.author-name {
+	display: block;
+	text-align: center;
+	font-size: 28px;
+	font-weight: bold;
+	color: #1c1c18;
+	margin-top: 14px
+}
+.author-name:after {
+	display: none
+}
+
+.desc {
+	display: block;
+	text-align: center;
+	color: #6d6a5d;
+	font-size: 14px;
+	margin-top: 8px
+}
+
+/* 标签：inline-block 三等分 */
+.tab-list {
+	display: block;
+	text-align: center;
+	padding: 0;
+	margin: 18px 0 6px
+}
+.tab-item {
+	display: inline-block;
+	width: 30%;
+	height: auto;
+	padding: 9px 0;
+	margin: 0 1%;
+	border: 2px solid #1c1c18;
+	background: #fffdf7;
+	color: #57544a;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	cursor: pointer;
+	zoom: 1
+}
+.tab-item.active {
+	background: #c9e94f;
+	color: #1c1c18
+}
+.tab-item:before {
+	display: none
+}
+
+/* 卡片：一行四个 */
+.app-list {
+	display: none;
+	text-align: center;
+	padding: 8px 0
+}
+.app-list.is-active {
+	display: block
+}
+.item {
+	display: inline-block;
+	width: 23%;
+	vertical-align: top;
+	padding: 8px;
+	color: #1c1c18;
+	zoom: 1
+}
+.content-wrap {
+	display: block;
+	background: #fffdf7;
+	border: 2px solid #1c1c18;
+	padding: 14px 10px;
+	text-align: center
+}
+.img-wrap {
+	display: inline-block;
+	width: 45px;
+	height: 45px;
+	margin: 0 0 8px 0
+}
+.img-wrap img {
+	width: 45px;
+	height: 45px
+}
+.app-name {
+	display: block;
+	color: #1c1c18;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	width: auto
+}
+
+/* 特效层在 IE8 下全部关闭 */
+.doodle-layer,
+.cursor-dot,
+.cursor-ring,
+.banner-deco {
+	display: none !important
+}
+
+.app-footer {
+	display: block;
+	text-align: center;
+	color: #9b9787;
+	font-size: 12px;
+	padding: 10px 0
+}
+.af-line {
+	display: none
+}
+.af-text {
+	color: #9b9787
+}
+body:before,
+.banner:after {
+	display: none !important
+}
+.app-list.is-active .item {
+	animation: none !important
+}
+
+/* 弹窗 */
+.modal {
+	background: #d9d5c6
+}
+.modal-content {
+	width: 80%;
+	background: #fffdf7;
+	border: 2px solid #1c1c18;
+	padding: 14px
+}
+.close {
+	color: #1c1c18;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer
+}
+
+.web_notice {
+	background: #efece0
+}
+.web_notice_content {
+	width: 480px;
+	background: #fffdf7;
+	border: 2px solid #1c1c18;
+	padding: 30px;
+	text-align: center
+}
+.web_notice_content:before {
+	display: none
+}
+.web_notice h3 {
+	font-size: 24px;
+	color: #1c1c18;
+	font-weight: bold;
+	text-align: center
+}
+.web_notice p {
+	color: #6d6a5d;
+	font-size: 15px;
+	text-align: center;
+	margin-top: 16px
+}
+.web_notice a {
+	display: block;
+	background: #c9e94f;
+	border: 2px solid #1c1c18;
+	color: #1c1c18;
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+	padding: 14px 0;
+	margin-top: 26px;
+	cursor: pointer
+}
+.modal-tip {
+	border: 2px dashed #b9b5a4;
+	padding: 30px 10px;
+	text-align: center;
+	color: #6d6a5d
+}
