@@ -649,8 +649,10 @@ body:before {
 	z-index: 1;
 	width: 100%;
 	max-width: 1080px;
-	margin: 4px auto 26px;
+	/* 上外边距 auto：把页脚推到页面最底部；左右 auto：水平居中 */
+	margin: auto auto 24px;
 	padding: 0 20px;
+	text-align: center;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -775,7 +777,13 @@ body:before {
    ≥1024px 桌面（四列宽布局）
    ================================================== */
 body {
-	overflow-x: hidden
+	overflow-x: hidden;
+	/* 纵向弹性布局：内容不满一屏时，页脚也稳稳贴在页面底部居中 */
+	min-height: 100vh;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-direction: column;
+	flex-direction: column
 }
 
 /* ---------- 平板 ---------- */
@@ -910,7 +918,7 @@ body {
 	}
 	.site-footer {
 		font-size: 12px;
-		margin: 2px auto 20px
+		margin: auto auto 20px
 	}
 	.sf-line {
 		width: 20px
